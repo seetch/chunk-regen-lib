@@ -1,0 +1,13 @@
+name: ChunkRegenLib
+main: me.seetch.chunkregenlib.bootstrap.ChunkRegenLibPlugin
+version: '${version}'
+api-version: '1.21'
+author: seetch
+description: >-
+  Регенерация активных чанков на месте, без World#regenerateChunk.
+  Регистрирует ChunkRegenerator через ServicesManager для использования
+  из других плагинов.
+# TODO: выставить true только после реальной проверки на Folia — генерация
+# через черновой мир (ScratchWorldManager) на Folia ещё не тестировалась
+# (см. ADAPTERS.md, раздел 3).
+folia-supported: false

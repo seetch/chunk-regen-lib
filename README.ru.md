@@ -192,4 +192,4 @@ regenerator.regenerate(chunk, options).thenAccept(result -> {
 
 ## Лицензия
 
-Не определена — добавить перед первым публичным релизом.
+[MIT](LICENSE)

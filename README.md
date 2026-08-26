@@ -194,4 +194,4 @@ for whether a chunk is currently being regenerated (no TOCTOU guarantees).
 
 ## License
 
-Not yet decided — add one before the first public release.
+[MIT](LICENSE)

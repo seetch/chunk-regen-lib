@@ -40,10 +40,10 @@ repositories {
 }
 
 dependencies {
-    implementation("me.seetch:chunkregenlib-api:1.0.0")
-    implementation("me.seetch:chunkregenlib-core:1.0.0")
-    implementation("me.seetch:chunkregenlib-adapter-common:1.0.0")
-    implementation("me.seetch:chunkregenlib-adapter-1_21_4:1.0.0")
+    implementation("me.seetch:chunkregenlib-api:1.0.1")
+    implementation("me.seetch:chunkregenlib-core:1.0.1")
+    implementation("me.seetch:chunkregenlib-adapter-common:1.0.1")
+    implementation("me.seetch:chunkregenlib-adapter-1_21_4:1.0.1")
 }
 ```
 
@@ -61,22 +61,22 @@ dependencies {
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-api</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-core</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-adapter-common</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-adapter-1_21_4</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 </dependencies>
 ```
@@ -90,7 +90,7 @@ dependencies {
 `api`, `core` и `adapter-common` публикуют `-javadoc.jar` вместе с обычным jar'ом.
 Reposilite рендерит его в браузере по адресу
 `https://repo.seetch.ru/javadoc/releases/me/seetch/<артефакт>/<версия>/`,
-например `https://repo.seetch.ru/javadoc/releases/me/seetch/chunkregenlib-api/1.0.0/`.
+например `https://repo.seetch.ru/javadoc/releases/me/seetch/chunkregenlib-api/1.0.1/`.
 
 ## Два способа подключения
 

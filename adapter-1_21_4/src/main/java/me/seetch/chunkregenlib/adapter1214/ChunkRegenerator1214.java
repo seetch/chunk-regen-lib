@@ -1,5 +1,7 @@
 package me.seetch.chunkregenlib.adapter1214;
 
+import it.unimi.dsi.fastutil.shorts.ShortArrayList;
+import it.unimi.dsi.fastutil.shorts.ShortList;
 import me.seetch.chunkregenlib.adaptercommon.EntityRegenPolicyApplier;
 import me.seetch.chunkregenlib.adaptercommon.NeighborChunkSupport;
 import me.seetch.chunkregenlib.adaptercommon.SchedulingSupport;
@@ -81,7 +83,14 @@ final class ChunkRegenerator1214 implements ChunkRegenerator {
                     RegenerationResult.failure(Set.of(), List.of(), new ChunkBusyException(chunkX, chunkZ)));
         }
 
-        CompletableFuture<RegenerationResult> future = generateFreshDataAsync(world, chunkX, chunkZ, options)
+        // Генерация в черновом мире занимает реальное время, и без явного тикета
+        // ничто не мешает чанк-системе выгрузить целевой чанк за это время, если
+        // рядом нет игроков (частый случай для регенерации по расписанию/на старте
+        // сервера). Тикет форсирует загрузку чанка и удерживает его загруженным
+        // до конца операции, независимо от того, стоит ли там кто то.
+        CompletableFuture<RegenerationResult> future = SchedulingSupport
+                .callOnOwningThread(owner, world, chunkX, chunkZ, () -> world.addPluginChunkTicket(chunkX, chunkZ, owner))
+                .thenCompose(ignored -> generateFreshDataAsync(world, chunkX, chunkZ, options))
                 .orTimeout(options.timeoutMillis(), TimeUnit.MILLISECONDS)
                 .thenCompose(freshData -> SchedulingSupport
                         .callOnOwningThread(owner, world, chunkX, chunkZ,
@@ -89,7 +98,11 @@ final class ChunkRegenerator1214 implements ChunkRegenerator {
                         .thenCompose(stage -> stage))
                 .exceptionally(this::toFailureResult);
 
-        future.whenComplete((result, throwable) -> lockRegistry.unlock(key));
+        future.whenComplete((result, throwable) -> {
+            lockRegistry.unlock(key);
+            SchedulingSupport.callOnOwningThread(owner, world, chunkX, chunkZ,
+                    () -> world.removePluginChunkTicket(chunkX, chunkZ, owner));
+        });
         return future;
     }
 
@@ -141,7 +154,46 @@ final class ChunkRegenerator1214 implements ChunkRegenerator {
     private FreshChunkData captureFreshData(Chunk scratchChunk) {
         ServerLevel scratchLevel = NmsBridge.toServerLevel(scratchChunk.getWorld());
         LevelChunk scratchLevelChunk = NmsBridge.toLevelChunk(scratchChunk);
-        return new FreshChunkData(SerializableChunkData.copyOf(scratchLevel, scratchLevelChunk));
+        SerializableChunkData snapshot = SerializableChunkData.copyOf(scratchLevel, scratchLevelChunk);
+        return new FreshChunkData(withoutNullPostProcessing(snapshot));
+    }
+
+    /**
+     * SerializableChunkData#copyOf оставляет в postProcessingSections null для секций
+     * без отложенных обновлений (обычный случай для большинства секций). Это нормально
+     * для пути "запись в NBT на диск и обратно" (там пустые списки просто не пишутся),
+     * но SerializableChunkData#read не проверяет элементы массива на null перед тем,
+     * как передать их в addPackedPostProcess, и падает с NullPointerException внутри
+     * ShortList#addAll. Живой снимок через copyOf этот путь не проходит, поэтому
+     * баг проявляется только здесь, а не при обычной загрузке чанка с диска.
+     */
+    private static SerializableChunkData withoutNullPostProcessing(SerializableChunkData snapshot) {
+        ShortList[] original = snapshot.postProcessingSections();
+        ShortList[] patched = new ShortList[original.length];
+        for (int i = 0; i < original.length; i++) {
+            patched[i] = original[i] != null ? original[i] : new ShortArrayList();
+        }
+        return new SerializableChunkData(
+                snapshot.biomeRegistry(),
+                snapshot.chunkPos(),
+                snapshot.minSectionY(),
+                snapshot.lastUpdateTime(),
+                snapshot.inhabitedTime(),
+                snapshot.chunkStatus(),
+                snapshot.blendingData(),
+                snapshot.belowZeroRetrogen(),
+                snapshot.upgradeData(),
+                snapshot.carvingMask(),
+                snapshot.heightmaps(),
+                snapshot.packedTicks(),
+                patched,
+                snapshot.lightCorrect(),
+                snapshot.sectionData(),
+                snapshot.entities(),
+                snapshot.blockEntities(),
+                snapshot.structureData(),
+                snapshot.persistentDataContainer()
+        );
     }
 
     /** Применение к живому чанку — выполняется на владеющем потоке. */

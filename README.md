@@ -41,10 +41,10 @@ repositories {
 }
 
 dependencies {
-    implementation("me.seetch:chunkregenlib-api:1.0.0")
-    implementation("me.seetch:chunkregenlib-core:1.0.0")
-    implementation("me.seetch:chunkregenlib-adapter-common:1.0.0")
-    implementation("me.seetch:chunkregenlib-adapter-1_21_4:1.0.0")
+    implementation("me.seetch:chunkregenlib-api:1.0.1")
+    implementation("me.seetch:chunkregenlib-core:1.0.1")
+    implementation("me.seetch:chunkregenlib-adapter-common:1.0.1")
+    implementation("me.seetch:chunkregenlib-adapter-1_21_4:1.0.1")
 }
 ```
 
@@ -62,22 +62,22 @@ dependencies {
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-api</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-core</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-adapter-common</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>me.seetch</groupId>
         <artifactId>chunkregenlib-adapter-1_21_4</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 </dependencies>
 ```
@@ -91,7 +91,7 @@ POM dependency metadata, so it won't be pulled in transitively.
 `api`, `core` and `adapter-common` publish a `-javadoc.jar` alongside the regular
 jar. Reposilite renders it in the browser at
 `https://repo.seetch.ru/javadoc/releases/me/seetch/<artifact>/<version>/`, e.g.
-`https://repo.seetch.ru/javadoc/releases/me/seetch/chunkregenlib-api/1.0.0/`.
+`https://repo.seetch.ru/javadoc/releases/me/seetch/chunkregenlib-api/1.0.1/`.
 
 ## Two ways to depend on it
 

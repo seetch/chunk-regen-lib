@@ -115,8 +115,19 @@ tasks.shadowJar {
             <shadedPattern>com.example.myplugin.shaded.chunkregenlib</shadedPattern>
         </relocation>
     </relocations>
+    <!-- Без этого shade релоцирует классы, но оставляет
+         META-INF/services/me.seetch.chunkregenlib.core.ChunkRegenAdapterProvider
+         (и имя файла, и его содержимое) указывающим на старый пакет.
+         ServiceLoader ищет файл по релоцированному имени интерфейса, ничего
+         не находит, и regenerate() всегда падает с UnsupportedServerVersionException. -->
+    <transformers>
+        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+    </transformers>
 </configuration>
 ```
+
+shadow-плагин (Gradle) делает это автоматически, maven-shade-plugin — только если
+явно подключить `ServicesResourceTransformer`.
 
 ```java
 @Override
